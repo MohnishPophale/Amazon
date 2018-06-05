@@ -1,23 +1,84 @@
-# Compiled class file
-*.class
+package firstproject;
 
-# Log file
-*.log
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-# BlueJ files
-*.ctxt
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+public class Class1 {
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+	public static void main(String[] args) throws InterruptedException
+	{
+		WebDriver driver = new FirefoxDriver();
+		
+		driver.manage().window().maximize();
+		
+		driver.get("https://www.amazon.com/");
+		
+		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+		
+		//sign in
+		driver.findElement(By.xpath("//a[@id='nav-link-accountList']//span[@class='nav-line-2']")).click();
+		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS); //wait-time
+		driver.findElement(By.xpath("//*[@id=\"ap_email\"]")).sendKeys("mohnishfeb17@gmail.com");
+		driver.findElement(By.id("continue")).click();
+		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS); //wait-time
+        driver.findElement(By.xpath("//*[@id=\"ap_password\"]")).sendKeys("Excalibur17!");
+        driver.findElement(By.id("signInSubmit")).click();
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS); //wait-time
+		
+		//search box
+		driver.findElement(By.xpath("//*[@id=\"twotabsearchtextbox\"]")).sendKeys("ipad air 2 case"); //item to search
+		driver.findElement(By.xpath("//input[@class=\"nav-input\"][@type='submit']")).click(); //click search
+		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS); //wait-time
+		
+		//filter selection
+		((JavascriptExecutor) driver).executeScript("scroll(0,1000)");//scrolling to "Plastic"
+		driver.findElement(By.xpath("//input[@name='s-ref-checkbox-8080061011']")).click();//click on plastic
+		Thread.sleep(4000);
+		((JavascriptExecutor) driver).executeScript("scroll(0,1500)"); //scrolling to "Price"
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//*[@id=\"low-price\"]")).sendKeys("20"); //min price
+		driver.findElement(By.xpath("//*[@id=\"high-price\"]")).sendKeys("100"); //max price
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//ul/div/li[6]/span/form/span/span/input[@value='Go']")).click(); //click on Go button
+		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS); //wait-time
+		Thread.sleep(3000);
+		Actions act = new Actions(driver);
+		//acquiring results
+		int i;
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<String> rating = new ArrayList<String>();
+		ArrayList<String> price = new ArrayList<String>();
+		for(i=0;i<4;i++)
+		{
+			//((JavascriptExecutor) driver).executeScript("scroll(0,400)");
+			if(i>2) 
+			{
+				((JavascriptExecutor) driver).executeScript("scroll(0,800)");
+			}
+		names.add(driver.findElement(By.xpath("//*[@id='result_"+i+"']/div/div[3]/div[1]/a/h2")).getAttribute("data-attribute"));
+		Thread.sleep(2000);
+		price.add(driver.findElement(By.xpath("//*[@id='result_"+i+"']/div/div[4]/div[1]/a/span[2]/span")).getText());
+		Thread.sleep(2000);
+		rating.add(driver.findElement(By.xpath("//*[@id='result_"+i+"']//span[contains(text(),'out of 5')]")).getAttribute("innerHTML"));
+		}
+		
+		//printing results
+		System.out.println("Names of first 5 items are as follows:-"+System.lineSeparator());
+		for(i=0;i<names.size();i++)
+		{
+		System.out.println((i+1)+")"+names.get(i)+"   "+price.get(i)+"  "+rating.get(i)+""+System.lineSeparator());
+		}
+		driver.quit();
+	
+	}
+}
